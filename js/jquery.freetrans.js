@@ -353,6 +353,7 @@
                         }
 
                         var drag = _noSelect(function(evt) {
+                            // console.log(111);
 
                                 if (scaleMe) {
                                         scaleMe(Point(evt.pageX, evt.pageY));
@@ -548,6 +549,13 @@
 
                 data = $.extend(data, opts);
 
+                if (opts.containment) {
+                    data.containment = $(opts.containment);
+                }
+                // debugger;
+                // console.log(data.containment);
+
+
                 if(opts.matrix){
                     var nums = opts.matrix.match(/\.?\d+/g);
 
@@ -635,6 +643,25 @@
                         return;
 
                 var tstr, el;
+                // console.log(222);
+                // console.log(data);
+                var container = $(data.containment);
+                var binds = container[0].getBoundingClientRect();
+                // console.log(binds);
+
+                var t = (data.y + data._p.hgt * (1 - data.scaley) / 2) >> 0
+                l = (data.x + data._p.wid * (1 - data.scalex) / 2) >> 0;
+
+                // console.log(data);
+                console.log('binds: ' + JSON.stringify(binds));
+                console.log(t);
+
+                // if (data._p.prev.left) {
+                    if (l < binds.left) return; // 左
+                    if ((l + data._p.cwid) > binds.right) return;  // 右
+                    if (t < binds.top) return; // 上
+                    if ((t +data._p.chgt) > binds.bottom) return; // 下
+                // }
 
                 // if showing controls... manipulate them
                 if(data._p.controls) {
@@ -667,8 +694,6 @@
 
                 el = data._p.dom;
 
-                var t = (data.y + data._p.hgt * (1 - data.scaley) / 2) >> 0
-                l = (data.x + data._p.wid * (1 - data.scalex) / 2) >> 0;
 
                 // need to move y?
                 if(t != data._p.prev.top) el.style.top = t + 'px';
